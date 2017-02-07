@@ -749,7 +749,27 @@
           "bannerProgress": "#F2F2F2"
         }
       ],
-      "stylesVersion": "6.88"
+      "stylesVersion": 6.88
+    },
+    "window": {
+      "favorites": {
+        "recentFind": [
+          {
+            "name": "nav"
+          },
+          {
+            "name": "header"
+          },
+          {
+            "name": "limit"
+          }
+        ]
+      }
+    },
+    "edit": {
+      "outline": {
+        "outlineProvider": "orion.outline.css.outliner"
+      }
     }
   }
 }
