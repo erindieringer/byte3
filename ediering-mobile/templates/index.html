@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="favicon.ico">
+    <title>Mobile Byte Tutorial</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="css/bootstrap-theme.min.css" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link href="css/theme.css" rel="stylesheet">
+    
+    <!-- Vega-lite visualization libraries -->
+    <script src="//d3js.org/d3.v3.min.js"></script>
+  	<script src="//vega.github.io/vega/vega.js"></script>
+  	<script src="//vega.github.io/vega-lite/vega-lite.js"></script>
+  	<script src="//vega.github.io/vega-editor/vendor/vega-embed.js" charset="utf-8"></script>
+    
+    <style media="screen">
+	    /* Add space between vega-embed links  */
+	    .vega-actions a {
+	      margin-right: 5px;
+	    }
+	  </style>
+  </head>
+
+  <body role="document">
+
+        <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Home</a></li>
+            <li><a href="/about">About This Data Set</a></li>
+            <li><a href="/quality">Data Quality</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container theme-showcase" role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+	<h1>Data Pipeline Project Mobile Byte Example</h1>
+        <p>Using the data from Aware, my goal for this assignment was to answer the question how does my phone usage 
+        (quantified by screen status and message information) vary by location and time of day.</p>
+         <p>To answer this question I collected data from screen usage, battery charges, messaging information, and location. I quickly learned the challeges
+         of mobile data when my location tables simply never appeared in my databse and my messaging data tables never populated. To supplement my missing location
+         information I decided to focus on the information avaible from Monday - Thrusday (when I have class) and supplement the missing location data with my 
+         class schedule.</p>
+      </div>
+
+   
+   
+    <ul>
+   {% for item in queries2 %}
+   <li>Query: {{item.query}}<br>
+      <!-- {% for row in item.results %}
+          {{row}}<br>
+       {% endfor %} -->
+   </li>
+   {% endfor %}
+   </ul>
+   <div id="vis1"></div>
+   <div id="vis2"></div>
+   <!-- Vega-lite graphing code. -->
+   <script>
+	  // Assign the specification to a local variable vlSpec.
+	  
+	 var vlSpec1 = {
+	    "data": {
+	      "values": [
+//	      {% for query in queries2 %}
+				{% for row in queries2[0].results %}
+	          		{"time": "{{row[0]}}", "count": {{row[1]}} },
+	       		{% endfor %}
+//	       {% endfor %}
+	       	
+	      ]
+	    },
+		"mark": "circle",
+		  "encoding": {
+		    "y": {
+		      "field": "time",
+		      "type": "temporal",
+		      "timeUnit": "day"
+		    },
+		    "x": {
+		      "field": "time",
+		      "type": "temporal",
+		      "timeUnit": "hours"
+		    },
+		    "size": {
+		      "field": "count",
+		      "type": "quantitative",
+		      "aggregate": "sum"
+		    }
+  	}
+
+	 };
+	 
+	 var vlSpec2 = {
+	 	 "width": 300,
+ 		 "height": 300,
+	    "data": {
+	      "values": [
+//	      {% for query in queries2 %}
+				{% for row in queriesT[0].results %}
+	          		{"day": "{{row[0]}}", "screen status": {{row[1]}}, "hour": {{row[2]}} },
+	       		{% endfor %}
+//	       {% endfor %}
+	       	
+	      ]
+	    },
+		"mark": "area",
+		  "encoding": {
+		    "column": {"field": "day","type": "ordinal"},
+		    "x": {"field": "hour","type": "quantitative",},
+		    "y": {"field": "screen status","type": "quantitative", "aggregate": "sum"},
+		    "color": {"field": "screen status", "type": "nominal"}
+  		},
+  			"config": {"mark": {"stacked": "normalize"}}
+
+	 };
+
+
+			
+	  
+	 var embedSpec1 = {
+	    mode: "vega-lite",  // Instruct Vega-Embed to use the Vega-Lite compiler
+	    spec: vlSpec1
+	    // You can add more vega-embed configuration properties here.
+	    // See https://github.com/vega/vega/wiki/Embed-Vega-Web-Components#configuration-propeties for more information.
+	  };
+	  
+	 var embedSpec2 = {
+	    mode: "vega-lite",  // Instruct Vega-Embed to use the Vega-Lite compiler
+	    spec: vlSpec2
+	    // You can add more vega-embed configuration properties here.
+	    // See https://github.com/vega/vega/wiki/Embed-Vega-Web-Components#configuration-propeties for more information.
+	  };
+	  
+	  
+	
+	  // Embed the visualization in the container with id `vis`
+
+	  vg.embed("#vis1", embedSpec1, function(error, result) {
+	    // Callback receiving the View instance and parsed Vega spec
+	    // result.view is the View, which resides under the '#vis' element
+	  });
+	  
+	  
+	  vg.embed("#vis2", embedSpec2, function(error, result) {
+	    // Callback receiving the View instance and parsed Vega spec
+	    // result.view is the View, which resides under the '#vis' element
+	  });
+  </script>
+
+
+   <div class="page-header">
+		<p> You should add information here, including some tables
+		and/or charts, telling the reader about the relationship
+		  between time and activity in your data.</p>
+	
+		<p> You should also add information here, including some tables
+		and/or charts, telling the reader about the relationship
+		between time and location in your data.</p>
+		
+		
+    </div> <!-- /page-header -->
+   </div> <!-- /container -->
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/docs.min.js"></script>
+  </body>
+</html>
