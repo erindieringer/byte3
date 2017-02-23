@@ -71,6 +71,92 @@
    
    
    <div id="vis1"></div>
+   
+   <input type="checkbox" id="myCheck" onchange="doalert(this)"">
+  <script>
+	   function doalert(checkboxElem) {
+		  if (checkboxElem.checked) {
+		    var mon = {
+			 	"layers": [
+			 	 {"data": {
+						      "values": [
+						      {% for query in queriesM %}
+									{% for row in query.results %}
+						          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+						       		{% endfor %}
+						       {% endfor %}
+						       	
+						      ]
+						    },
+							"mark": "area",
+							  "encoding": {
+							    "x": {"field": "hour", "type": "nominal"},
+							    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+							      "color": {
+								      "field": "screen status",
+								      "type": "nominal",
+								      "scale": {
+								        "domain": [0,1, 2, 3],
+								        "range": ["#c7c7c7",
+									              "#79d279",
+									              "#e7ba52",
+									              "#6fdcdc"]
+								      },
+							  },
+						  },
+					
+		  			"config": {"mark": {"stacked": "normalize"}}},
+		  			
+		  			   {"data": {
+						    "values": [
+						      {"class": "1.0", "time": 10},{"class": "1.0", "time": 11}, {"class": "0.0", "time": 12},
+						      {"class": "0.0", "time": 13}, {"class": "0.0", "time": 14},
+						      {"class": "1.0", "time": 15}, {"class": "1.0", "time": 16}]
+						  },
+						  "mark": "area",
+						  "encoding": {
+						    "x": {"field": "time", "type": "nomial"},
+						    "y": {"field": "class", "type": "quantitative"}
+						  }}
+		  			
+		  		]
+		
+			 };
+		  } else {
+		    	 var mon = {
+		 	 "data": {
+					      "values": [
+					      {% for query in queriesM %}
+								{% for row in query.results %}
+					          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+					       		{% endfor %}
+					       {% endfor %}
+					       	
+					      ]
+					    },
+						"mark": "area",
+						  "encoding": {
+						    "x": {"field": "hour", "type": "nominal"},
+						    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+						      "color": {
+							      "field": "screen status",
+							      "type": "nominal",
+							      "scale": {
+							        "domain": [0,1, 2, 3],
+							        "range": ["#c7c7c7",
+								              "#79d279",
+								              "#e7ba52",
+								              "#6fdcdc"]
+							      },
+						  },
+					  },
+				
+	  			"config": {"mark": {"stacked": "normalize"}}
+	
+		 };
+		  }
+		}
+  </script>
    <h4>Monday</h4>
    <div id="vis2"></div>
    <h4>Tuesday</h4>
@@ -114,54 +200,137 @@
   	}
 
 	 };
-	 
-	 var mon = {
-	 	
-	 	"layers": [
-	 	 {"data": {
-				      "values": [
-				      {% for query in queriesM %}
-							{% for row in query.results %}
-				          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
-				       		{% endfor %}
-				       {% endfor %}
-				       	
-				      ]
-				    },
-					"mark": "area",
-					  "encoding": {
-					    "x": {"field": "hour", "type": "nominal"},
-					    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
-					      "color": {
-						      "field": "screen status",
-						      "type": "nominal",
-						      "scale": {
-						        "domain": [0,1, 2, 3],
-						        "range": ["#c7c7c7",
-							              "#79d279",
-							              "#e7ba52",
-							              "#6fdcdc"]
-						      },
-					  },
-				  },
-			
-  			"config": {"mark": {"stacked": "normalize"}}},
-  			
-  			   {"data": {
-				    "values": [
-				      {"class": "1.0", "time": 10},{"class": "1.0", "time": 11}, {"class": "0.0", "time": 12},
-				      {"class": "0.0", "time": 13}, {"class": "0.0", "time": 14},
-				      {"class": "1.0", "time": 15}, {"class": "1.0", "time": 16}]
-				  },
-				  "mark": "area",
-				  "encoding": {
-				    "x": {"field": "time", "type": "nomial"},
-				    "y": {"field": "class", "type": "quantitative"}
-				  }}
-  			
-  		]
+//	 function doalert(checkboxElem) {
+//		  if (checkboxElem.checked) {
+//		    var mon = {
+//			 	"layers": [
+//			 	 {"data": {
+//						      "values": [
+//						      {% for query in queriesM %}
+//									{% for row in query.results %}
+//						          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+//						       		{% endfor %}
+//						       {% endfor %}
+//						       	
+//						      ]
+//						    },
+//							"mark": "area",
+//							  "encoding": {
+//							    "x": {"field": "hour", "type": "nominal"},
+//							    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+//							      "color": {
+//								      "field": "screen status",
+//								      "type": "nominal",
+//								      "scale": {
+//								        "domain": [0,1, 2, 3],
+//								        "range": ["#c7c7c7",
+//									              "#79d279",
+//									              "#e7ba52",
+//									              "#6fdcdc"]
+//								      },
+//							  },
+//						  },
+//					
+//		  			"config": {"mark": {"stacked": "normalize"}}},
+//		  			
+//		  			   {"data": {
+//						    "values": [
+//						      {"class": "1.0", "time": 10},{"class": "1.0", "time": 11}, {"class": "0.0", "time": 12},
+//						      {"class": "0.0", "time": 13}, {"class": "0.0", "time": 14},
+//						      {"class": "1.0", "time": 15}, {"class": "1.0", "time": 16}]
+//						  },
+//						  "mark": "area",
+//						  "encoding": {
+//						    "x": {"field": "time", "type": "nomial"},
+//						    "y": {"field": "class", "type": "quantitative"}
+//						  }}
+//		  			
+//		  		]
+//		
+//			 };
+//		  } else {
+//		    	 var mon = {
+//		 	 "data": {
+//					      "values": [
+//					      {% for query in queriesM %}
+//								{% for row in query.results %}
+//					          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+//					       		{% endfor %}
+//					       {% endfor %}
+//					       	
+//					      ]
+//					    },
+//						"mark": "area",
+//						  "encoding": {
+//						    "x": {"field": "hour", "type": "nominal"},
+//						    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+//						      "color": {
+//							      "field": "screen status",
+//							      "type": "nominal",
+//							      "scale": {
+//							        "domain": [0,1, 2, 3],
+//							        "range": ["#c7c7c7",
+//								              "#79d279",
+//								              "#e7ba52",
+//								              "#6fdcdc"]
+//							      },
+//						  },
+//					  },
+//				
+//	  			"config": {"mark": {"stacked": "normalize"}}
+//	
+//		 };
+//		  }
+//	  }
 
-	 };
+		
+	 
+		    var mon = {
+			 	"layers": [
+			 	 {"data": {
+						      "values": [
+						      {% for query in queriesM %}
+									{% for row in query.results %}
+						          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+						       		{% endfor %}
+						       {% endfor %}
+						       	
+						      ]
+						    },
+							"mark": "area",
+							  "encoding": {
+							    "x": {"field": "hour", "type": "nominal"},
+							    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+							      "color": {
+								      "field": "screen status",
+								      "type": "nominal",
+								      "scale": {
+								        "domain": [0,1, 2, 3],
+								        "range": ["#c7c7c7",
+									              "#79d279",
+									              "#e7ba52",
+									              "#6fdcdc"]
+								      },
+							  },
+						  },
+					
+		  			"config": {"mark": {"stacked": "normalize"}}},
+		  			
+		  			   {"data": {
+						    "values": [
+						      {"class": "1.0", "time": 10},{"class": "1.0", "time": 11}, {"class": "0.0", "time": 12},
+						      {"class": "0.0", "time": 13}, {"class": "0.0", "time": 14},
+						      {"class": "1.0", "time": 15}, {"class": "1.0", "time": 16}]
+						  },
+						  "mark": "area",
+						  "encoding": {
+						    "x": {"field": "time", "type": "nomial"},
+						    "y": {"field": "class", "type": "quantitative"}
+						  }}
+		  			
+		  		]
+		
+			 };
 	 
 	 var tues = {
 	 	 "data": {
@@ -321,6 +490,8 @@
 	    // Callback receiving the View instance and parsed Vega spec
 	    // result.view is the View, which resides under the '#vis' element
 	  });
+  
+
   </script>
 
 
