@@ -58,7 +58,7 @@
 
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron">
-	<h1>Erin's Data Pipeline Project Mobile Byte </h1>
+	<h1>Data Pipeline Project Mobile Byte </h1>
         <p>Using the data from Aware, my goal for this assignment was to answer the question how does my phone usage 
         (quantified by screen status and message information) vary by location and time of day.</p>
          <p>To answer this question I collected data from screen usage, battery charges, messaging information, and location. I quickly learned the challeges
@@ -69,12 +69,96 @@
 
    
    
+   <p>Originally when this project was first assigned I intended to explore the relationship between my location, the time and my mobile phone usage.
+   Because of this I collected data on screen usage/status, battery plugin, location and messages. However, within my tables I only recieved data from screen
+   stats and battery plugin. My location table did not appear and my messages data never populated the table.</p>
    
-   <div id="vis1"></div>
+   <p>After reviewing the battery charge data I found that it did not answer my question of phone usage because the schema gave only time of plugin and discharge,
+   and this did not help answer my question. My screen status data was the most complete of all the data but there was still missing information consitently 
+   between the hours of 8am and 1pm (see chart below).</p>
    
-   <input type="checkbox" id="myCheck" onchange="doalert(this)"">
-  <script>
-	   function doalert(checkboxElem) {
+   <b> Total sum of all screen status data for each hour grouped by day of the week </b>
+   <div id="vis1"></div><br/>
+   
+   <p> After some thought and thinking of some ways to supplement my lack of data, and most importantly my lack of location data, I decided to narrow down
+   and filter my data to be only days in which I have class (Monday - Thursday). Filtering the data to just these days allowed me to supplement my missing location
+   data with my class schedule. My thought was to pivot how I framed my question to <b>"What is the difference between my phone usage while I am in class, 
+   versus not in class?" </b>.</p>
+   
+   <p> The next big hurdle with my data was tackling the missing information that occured daily between 8am ~ 1pm. Instead of showing a sum or count of the various
+   screen events, I decided to normalize the data before visualizing it. By doing this I was still able to compare the percetage of each screen status when I was
+   in class versus not in class. After all, what I really care about is the proportion of the screen being on/off or locked/unlocked in comparison to the other
+   days or hours. </p>
+   
+   <p> For my final visualization I made 4 different graphs using Vega-Lite that each represent a normalized visualization of the status of my screen for Monday - Thursday.
+   To see the time periods when I am in class, select the checkbox below and the blocks of time will appear on the graph. </p>
+   
+   <b> Screen status coding: 0 - Screen Off, 1 - Screen On, 2 - Screen Locked, 3 - Screen Unlocked </b> <br/><br/>
+   <button onclick="doalert(this)"  >Click to show graphs!</button> </br>
+   <div id='hide'>
+   	<input type="checkbox" id="myCheck" onchange="doalert(this)"> <b> Show when in class</b> </input>
+   	</div>
+  
+   <h4>Monday</h4>
+   <div id="vis2"></div>
+   <h4>Tuesday</h4>
+   <div id="vis3"></div>
+   <h4>Wednesday</h4>
+   <div id="vis4"></div>
+   <h4>Thursday</h4>
+   <div id="vis5"></div>
+   <br/>
+   
+   <p> For the visual aspect of the graph I chose to use area graphs versus bar graphs because it was easier to see the change across the intervals of hours.
+   I chose the colors of each screen status to correlated with what that status meant: grey for off (0) because on off screen is usually black, green for on (1)
+  because green is the most common convention for "on" or "go". For locked and unlocked I chose colors that stuck out from the other two and fit within the sheme. </p>
+  
+  
+  <b> Answering the question </b>
+   
+   
+   
+   <!-- Vega-lite graphing code. -->
+   <script>
+	  // Assign the specification to a local variable vlSpec.
+	  
+	 var vlSpec1 = {
+	    "data": {
+	      "values": [
+//	      {% for query in queries2 %}
+				{% for row in queries2[0].results %}
+	          		{"time": "{{row[0]}}", "count": {{row[1]}} },
+	       		{% endfor %}
+//	       {% endfor %}
+	       	
+	      ]
+	    },
+		"mark": "circle",
+		  "encoding": {
+		    "y": {
+		      "field": "time",
+		      "type": "temporal",
+		      "timeUnit": "day"
+		    },
+		    "x": {
+		      "field": "time",
+		      "type": "temporal",
+		      "timeUnit": "hours"
+		    },
+		    "size": {
+		      "field": "count",
+		      "type": "quantitative",
+		      "aggregate": "sum"
+		    }
+  	}
+
+	 };
+		function myFunction(button){
+			button.style.display = 'none'
+		}
+		
+	 
+  		function doalert(checkboxElem) {
 		  if (checkboxElem.checked) {
 		    var mon = {
 			 	"layers": [
@@ -117,179 +201,21 @@
 						  "encoding": {
 						    "x": {"field": "time", "type": "nomial"},
 						    "y": {"field": "class", "type": "quantitative"}
-						  }}
+						  },
+						        "config": {
+        "mark": {
+          "fillOpacity": 0.4
+        }
+      }}
 		  			
 		  		]
 		
 			 };
-		  } else {
-		    	 var mon = {
-		 	 "data": {
-					      "values": [
-					      {% for query in queriesM %}
-								{% for row in query.results %}
-					          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
-					       		{% endfor %}
-					       {% endfor %}
-					       	
-					      ]
-					    },
-						"mark": "area",
-						  "encoding": {
-						    "x": {"field": "hour", "type": "nominal"},
-						    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
-						      "color": {
-							      "field": "screen status",
-							      "type": "nominal",
-							      "scale": {
-							        "domain": [0,1, 2, 3],
-							        "range": ["#c7c7c7",
-								              "#79d279",
-								              "#e7ba52",
-								              "#6fdcdc"]
-							      },
-						  },
-					  },
-				
-	  			"config": {"mark": {"stacked": "normalize"}}
-	
-		 };
-		  }
-		}
-  </script>
-   <h4>Monday</h4>
-   <div id="vis2"></div>
-   <h4>Tuesday</h4>
-   <div id="vis3"></div>
-   <h4>Wednesday</h4>
-   <div id="vis4"></div>
-   <h4>Thursday</h4>
-   <div id="vis5"></div>
-   <!-- Vega-lite graphing code. -->
-   <script>
-	  // Assign the specification to a local variable vlSpec.
-	  
-	 var vlSpec1 = {
-	    "data": {
-	      "values": [
-//	      {% for query in queries2 %}
-				{% for row in queries2[0].results %}
-	          		{"time": "{{row[0]}}", "count": {{row[1]}} },
-	       		{% endfor %}
-//	       {% endfor %}
-	       	
-	      ]
-	    },
-		"mark": "circle",
-		  "encoding": {
-		    "y": {
-		      "field": "time",
-		      "type": "temporal",
-		      "timeUnit": "day"
-		    },
-		    "x": {
-		      "field": "time",
-		      "type": "temporal",
-		      "timeUnit": "hours"
-		    },
-		    "size": {
-		      "field": "count",
-		      "type": "quantitative",
-		      "aggregate": "sum"
-		    }
-  	}
-
-	 };
-//	 function doalert(checkboxElem) {
-//		  if (checkboxElem.checked) {
-//		    var mon = {
-//			 	"layers": [
-//			 	 {"data": {
-//						      "values": [
-//						      {% for query in queriesM %}
-//									{% for row in query.results %}
-//						          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
-//						       		{% endfor %}
-//						       {% endfor %}
-//						       	
-//						      ]
-//						    },
-//							"mark": "area",
-//							  "encoding": {
-//							    "x": {"field": "hour", "type": "nominal"},
-//							    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
-//							      "color": {
-//								      "field": "screen status",
-//								      "type": "nominal",
-//								      "scale": {
-//								        "domain": [0,1, 2, 3],
-//								        "range": ["#c7c7c7",
-//									              "#79d279",
-//									              "#e7ba52",
-//									              "#6fdcdc"]
-//								      },
-//							  },
-//						  },
-//					
-//		  			"config": {"mark": {"stacked": "normalize"}}},
-//		  			
-//		  			   {"data": {
-//						    "values": [
-//						      {"class": "1.0", "time": 10},{"class": "1.0", "time": 11}, {"class": "0.0", "time": 12},
-//						      {"class": "0.0", "time": 13}, {"class": "0.0", "time": 14},
-//						      {"class": "1.0", "time": 15}, {"class": "1.0", "time": 16}]
-//						  },
-//						  "mark": "area",
-//						  "encoding": {
-//						    "x": {"field": "time", "type": "nomial"},
-//						    "y": {"field": "class", "type": "quantitative"}
-//						  }}
-//		  			
-//		  		]
-//		
-//			 };
-//		  } else {
-//		    	 var mon = {
-//		 	 "data": {
-//					      "values": [
-//					      {% for query in queriesM %}
-//								{% for row in query.results %}
-//					          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
-//					       		{% endfor %}
-//					       {% endfor %}
-//					       	
-//					      ]
-//					    },
-//						"mark": "area",
-//						  "encoding": {
-//						    "x": {"field": "hour", "type": "nominal"},
-//						    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
-//						      "color": {
-//							      "field": "screen status",
-//							      "type": "nominal",
-//							      "scale": {
-//							        "domain": [0,1, 2, 3],
-//							        "range": ["#c7c7c7",
-//								              "#79d279",
-//								              "#e7ba52",
-//								              "#6fdcdc"]
-//							      },
-//						  },
-//					  },
-//				
-//	  			"config": {"mark": {"stacked": "normalize"}}
-//	
-//		 };
-//		  }
-//	  }
-
-		
-	 
-		    var mon = {
+			 var tues = {
 			 	"layers": [
 			 	 {"data": {
 						      "values": [
-						      {% for query in queriesM %}
+						      {% for query in queriesT %}
 									{% for row in query.results %}
 						          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
 						       		{% endfor %}
@@ -318,115 +244,259 @@
 		  			
 		  			   {"data": {
 						    "values": [
-						      {"class": "1.0", "time": 10},{"class": "1.0", "time": 11}, {"class": "0.0", "time": 12},
-						      {"class": "0.0", "time": 13}, {"class": "0.0", "time": 14},
-						      {"class": "1.0", "time": 15}, {"class": "1.0", "time": 16}]
+						      {"class": "1.0", "time": 9},{"class": "1.0", "time": 10}, {"class": "0.0", "time": 11},
+						      {"class": "0.0", "time": 12}, {"class": "1.0", "time": 13},
+						      {"class": "1.0", "time": 15}, {"class": "1.0", "time": 16},
+						      {"class": "0.0", "time": 17}, {"class": "0.0", "time": 18}]
 						  },
 						  "mark": "area",
 						  "encoding": {
 						    "x": {"field": "time", "type": "nomial"},
 						    "y": {"field": "class", "type": "quantitative"}
-						  }}
+						  },      "config": {
+						        "mark": {
+						          "fillOpacity": 0.4
+						        }
+      }}
 		  			
 		  		]
 		
 			 };
-	 
-	 var tues = {
-	 	 "data": {
-				      "values": [
-				      {% for query in queriesT %}
-							{% for row in query.results %}
-				          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
-				       		{% endfor %}
-				       {% endfor %}
-				       	
-				      ]
-				    },
-					"mark": "area",
-					  "encoding": {
-					    "x": {"field": "hour", "type": "nominal"},
-					    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
-					      "color": {
-						      "field": "screen status",
-						      "type": "nominal",
-						      "scale": {
-						        "domain": [0,1, 2, 3],
-						        "range": ["#c7c7c7",
-							              "#79d279",
-							              "#e7ba52",
-							              "#6fdcdc"]
-						      },
-					  },
-				  },
+			 			 var wed = {
+			 	"layers": [
+			 	 {"data": {
+						      "values": [
+						      {% for query in queriesW %}
+									{% for row in query.results %}
+						          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+						       		{% endfor %}
+						       {% endfor %}
+						       	
+						      ]
+						    },
+							"mark": "area",
+							  "encoding": {
+							    "x": {"field": "hour", "type": "nominal"},
+							    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+							      "color": {
+								      "field": "screen status",
+								      "type": "nominal",
+								      "scale": {
+								        "domain": [0,1, 2, 3],
+								        "range": ["#c7c7c7",
+									              "#79d279",
+									              "#e7ba52",
+									              "#6fdcdc"]
+								      },
+							  },
+						  },
+					
+		  			"config": {"mark": {"stacked": "normalize"}}},
+		  			
+		  			   {"data": {
+						    "values": [
+						      {"class": "1.0", "time": 10},{"class": "1.0", "time": 11}, {"class": "1.0", "time": 12},
+						      {"class": "1.0", "time": 13}, {"class": "0.0", "time": 14},
+						      {"class": "1.0", "time": 15}, {"class": "1.0", "time": 16}, {"class": "0.0", "time": 17}]
+						  },
+						  "mark": "area",
+						  "encoding": {
+						    "x": {"field": "time", "type": "nomial"},
+						    "y": {"field": "class", "type": "quantitative"}
+						  },
+						        "config": {
+									        "mark": {
+									          "fillOpacity": 0.4
+									        }
+									      }}
+		  			
+		  		]
+		
+			 };
+			 
+			 			 var thurs = {
+			 	"layers": [
+			 	 {"data": {
+						      "values": [
+						      {% for query in queriesTH %}
+									{% for row in query.results %}
+						          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+						       		{% endfor %}
+						       {% endfor %}
+						       	
+						      ]
+						    },
+							"mark": "area",
+							  "encoding": {
+							    "x": {"field": "hour", "type": "nominal"},
+							    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+							      "color": {
+								      "field": "screen status",
+								      "type": "nominal",
+								      "scale": {
+								        "domain": [0,1, 2, 3],
+								        "range": ["#c7c7c7",
+									              "#79d279",
+									              "#e7ba52",
+									              "#6fdcdc"]
+								      },
+							  },
+						  },
+					
+		  			"config": {"mark": {"stacked": "normalize"}}},
+		  			
+		  			   {"data": {
+						    "values": [
+						      {"class": "1.0", "time": 9},{"class": "1.0", "time": 10}, {"class": "0.0", "time": 11},
+						      {"class": "0.0", "time": 12}, {"class": "1.0", "time": 13},
+						      {"class": "1.0", "time": 15}, {"class": "1.0", "time": 16},
+						      {"class": "0.0", "time": 17}, {"class": "0.0", "time": 18}]
+						  },
+						  "mark": "area",
+						  "encoding": {
+						    "x": {"field": "time", "type": "nomial"},
+						    "y": {"field": "class", "type": "quantitative"}
+						  },
+						        "config": {
+							        "mark": {
+							          "fillOpacity": 0.4
+							        }
+      }}
+		  			
+		  		]
+		
+			 };
+			 
+		  } else {
+					    	 var mon = {
+					 	 "data": {
+								      "values": [
+								      {% for query in queriesM %}
+											{% for row in query.results %}
+								          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+								       		{% endfor %}
+								       {% endfor %}
+								       	
+								      ]
+								    },
+									"mark": "area",
+									  "encoding": {
+									    "x": {"field": "hour", "type": "nominal"},
+									    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+									      "color": {
+										      "field": "screen status",
+										      "type": "nominal",
+										      "scale": {
+										        "domain": [0,1, 2, 3],
+										        "range": ["#c7c7c7",
+											              "#79d279",
+											              "#e7ba52",
+											              "#6fdcdc"]
+										      },
+									  },
+								  },
+							
+				  			"config": {"mark": {"stacked": "normalize"}}
+				
+					 };
+					  
+				 
+				 
+				 var tues = {
+				 	 "data": {
+							      "values": [
+							      {% for query in queriesT %}
+										{% for row in query.results %}
+							          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+							       		{% endfor %}
+							       {% endfor %}
+							       	
+							      ]
+							    },
+								"mark": "area",
+								  "encoding": {
+								    "x": {"field": "hour", "type": "nominal"},
+								    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+								      "color": {
+									      "field": "screen status",
+									      "type": "nominal",
+									      "scale": {
+									        "domain": [0,1, 2, 3],
+									        "range": ["#c7c7c7",
+										              "#79d279",
+										              "#e7ba52",
+										              "#6fdcdc"]
+									      },
+								  },
+							  },
+						
+			  			"config": {"mark": {"stacked": "normalize"}}
 			
-  			"config": {"mark": {"stacked": "normalize"}}
-
-	 };
-	 var wed = {
-	 	 "data": {
-				      "values": [
-				      {% for query in queriesW %}
-							{% for row in query.results %}
-				          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
-				       		{% endfor %}
-				       {% endfor %}
-				       	
-				      ]
-				    },
-					"mark": "area",
-					  "encoding": {
-					    "x": {"field": "hour", "type": "nominal"},
-					    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
-					      "color": {
-						      "field": "screen status",
-						      "type": "nominal",
-						      "scale": {
-						        "domain": [0,1, 2, 3],
-						        "range": ["#c7c7c7",
-							              "#79d279",
-							              "#e7ba52",
-							              "#6fdcdc"]
-						      },
-					  },
-				  },
+				 };
+				 var wed = {
+				 	 "data": {
+							      "values": [
+							      {% for query in queriesW %}
+										{% for row in query.results %}
+							          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+							       		{% endfor %}
+							       {% endfor %}
+							       	
+							      ]
+							    },
+								"mark": "area",
+								  "encoding": {
+								    "x": {"field": "hour", "type": "nominal"},
+								    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+								      "color": {
+									      "field": "screen status",
+									      "type": "nominal",
+									      "scale": {
+									        "domain": [0,1, 2, 3],
+									        "range": ["#c7c7c7",
+										              "#79d279",
+										              "#e7ba52",
+										              "#6fdcdc"]
+									      },
+								  },
+							  },
+						
+			  			"config": {"mark": {"stacked": "normalize"}}
 			
-  			"config": {"mark": {"stacked": "normalize"}}
-
-	 };
-		 var thurs = {
-	 	 "data": {
-				      "values": [
-				      {% for query in queriesTH %}
-							{% for row in query.results %}
-				          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
-				       		{% endfor %}
-				       {% endfor %}
-				       	
-				      ]
-				    },
-					"mark": "area",
-					  "encoding": {
-					    "x": {"field": "hour", "type": "nominal"},
-					    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
-					      "color": {
-						      "field": "screen status",
-						      "type": "nominal",
-						      "scale": {
-						        "domain": [0,1, 2, 3],
-						        "range": ["#c7c7c7",
-							              "#79d279",
-							              "#e7ba52",
-							              "#6fdcdc"]
-						      },
-					  },
-				  },
+				 };
+					 var thurs = {
+				 	 "data": {
+							      "values": [
+							      {% for query in queriesTH %}
+										{% for row in query.results %}
+							          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+							       		{% endfor %}
+							       {% endfor %}
+							       	
+							      ]
+							    },
+								"mark": "area",
+								  "encoding": {
+								    "x": {"field": "hour", "type": "nominal"},
+								    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+								      "color": {
+									      "field": "screen status",
+									      "type": "nominal",
+									      "scale": {
+									        "domain": [0,1, 2, 3],
+									        "range": ["#c7c7c7",
+										              "#79d279",
+										              "#e7ba52",
+										              "#6fdcdc"]
+									      },
+								  },
+							  },
+						
+			  			"config": {"mark": {"stacked": "normalize"}}
 			
-  			"config": {"mark": {"stacked": "normalize"}}
+				 };
+ }
 
-	 };
-
-			
 	  
 	 var embedSpec1 = {
 	    mode: "vega-lite",  // Instruct Vega-Embed to use the Vega-Lite compiler
@@ -490,20 +560,17 @@
 	    // Callback receiving the View instance and parsed Vega spec
 	    // result.view is the View, which resides under the '#vis' element
 	  });
+	  
+	  
   
-
+}
   </script>
+
+  
 
 
    <div class="page-header">
-		<p> You should add information here, including some tables
-		and/or charts, telling the reader about the relationship
-		  between time and activity in your data.</p>
-	
-		<p> You should also add information here, including some tables
-		and/or charts, telling the reader about the relationship
-		between time and location in your data.</p>
-		
+
 		
     </div> <!-- /page-header -->
    </div> <!-- /container -->
