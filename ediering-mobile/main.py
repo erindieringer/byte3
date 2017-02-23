@@ -55,19 +55,86 @@ def index():
     cursor = _DB.cursor()
     cursor.execute('SHOW TABLES')
 
-    query ="select FROM_UNIXTIME(timestamp/1000,'%m-%d-%Y %H:00:00') as 'time', count(*) as 'count' from screen where (DAYOFWEEK(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) > 1 AND DAYOFWEEK(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) < 6)  group by time"
+    query ="select FROM_UNIXTIME(timestamp/1000,'%m-%d-%Y %H:00:00') as 'time', count(*) as 'count' from screen group by time"
     rows = make_query(cursor, query)
     queries2  =[{"query": query, "results": rows}]
     
-    queryTrellis = "select DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) as day, screen_status, FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where (DAYOFWEEK(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) > 1 AND DAYOFWEEK(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) < 6) "  
-    rows = make_query(cursor, queryTrellis)
-    queriesT = [{"query": queryTrellis, "results": rows}]
+    #Warning this code is messy I'm so sorry
+    #Monday
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 0 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Monday' group by hour"
+    rows = make_query(cursor, query)
+    queriesM = [{"query": query, "results": rows}]
+    
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 1 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Monday' group by hour"
+    rows = make_query(cursor, query)
+    queriesM = queriesM + [{"query": query, "results": rows}]
+    
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 2 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Monday' group by hour"
+    rows = make_query(cursor, query)
+    queriesM = queriesM + [{"query": query, "results": rows}]
+    
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 3 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Monday' group by hour"
+    rows = make_query(cursor, query)
+    queriesM = queriesM + [{"query": query, "results": rows}]
+    
+    #Tuesday
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 0 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Tuesday' group by hour"
+    rows = make_query(cursor, query)
+    queriesT = [{"query": query, "results": rows}]
+    
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 1 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Tuesday' group by hour"
+    rows = make_query(cursor, query)
+    queriesT = queriesT + [{"query": query, "results": rows}]
+    
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 2 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Tuesday' group by hour"
+    rows = make_query(cursor, query)
+    queriesT = queriesT + [{"query": query, "results": rows}]
+    
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 3 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Tuesday' group by hour"
+    rows = make_query(cursor, query)
+    queriesT = queriesT + [{"query": query, "results": rows}]
+    
+    #Wednesday
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 0 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Wednesday' group by hour"
+    rows = make_query(cursor, query)
+    queriesW = [{"query": query, "results": rows}]
+    
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 1 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Wednesday' group by hour"
+    rows = make_query(cursor, query)
+    queriesW = queriesW + [{"query": query, "results": rows}]
+    
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 2 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Wednesday' group by hour"
+    rows = make_query(cursor, query)
+    queriesW = queriesW + [{"query": query, "results": rows}]
+    
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 3 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Wednesday' group by hour"
+    rows = make_query(cursor, query)
+    queriesW = queriesW + [{"query": query, "results": rows}]
+    
+    #Thursday
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 0 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Thursday' group by hour"
+    rows = make_query(cursor, query)
+    queriesTH = [{"query": query, "results": rows}]
+    
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 1 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Thursday' group by hour"
+    rows = make_query(cursor, query)
+    queriesTH = queriesTH + [{"query": query, "results": rows}]
+    
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 2 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Thursday' group by hour"
+    rows = make_query(cursor, query)
+    queriesTH = queriesTH + [{"query": query, "results": rows}]
+    
+    query = "select screen_status, Count(*), FROM_UNIXTIME(timestamp/1000,'%H') as 'hour' from screen where screen_status = 3 and DAYNAME(FROM_UNIXTIME(timestamp/1000,'%Y-%m-%d')) = 'Thursday' group by hour"
+    rows = make_query(cursor, query)
+    queriesTH = queriesTH + [{"query": query, "results": rows}]
+    
+   
     
     
     
     logging.info(cursor.fetchall())
     
-    context = {"queries2": queries2, "queriesT": queriesT}
+    context = {"queries2": queries2, "queriesM": queriesM, "queriesT": queriesT, "queriesW": queriesW, "queriesTH": queriesTH  }
     
     return template.render(context)
     

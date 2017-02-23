@@ -58,7 +58,7 @@
 
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron">
-	<h1>Data Pipeline Project Mobile Byte Example</h1>
+	<h1>Erin's Data Pipeline Project Mobile Byte </h1>
         <p>Using the data from Aware, my goal for this assignment was to answer the question how does my phone usage 
         (quantified by screen status and message information) vary by location and time of day.</p>
          <p>To answer this question I collected data from screen usage, battery charges, messaging information, and location. I quickly learned the challeges
@@ -69,17 +69,16 @@
 
    
    
-    <ul>
-   {% for item in queries2 %}
-   <li>Query: {{item.query}}<br>
-      <!-- {% for row in item.results %}
-          {{row}}<br>
-       {% endfor %} -->
-   </li>
-   {% endfor %}
-   </ul>
+   
    <div id="vis1"></div>
+   <h4>Monday</h4>
    <div id="vis2"></div>
+   <h4>Tuesday</h4>
+   <div id="vis3"></div>
+   <h4>Wednesday</h4>
+   <div id="vis4"></div>
+   <h4>Thursday</h4>
+   <div id="vis5"></div>
    <!-- Vega-lite graphing code. -->
    <script>
 	  // Assign the specification to a local variable vlSpec.
@@ -116,30 +115,147 @@
 
 	 };
 	 
-	 var vlSpec2 = {
-	 	 "width": 300,
- 		 "height": 300,
-	    "data": {
-	      "values": [
-//	      {% for query in queries2 %}
-				{% for row in queriesT[0].results %}
-	          		{"day": "{{row[0]}}", "screen status": {{row[1]}}, "hour": {{row[2]}} },
-	       		{% endfor %}
-//	       {% endfor %}
-	       	
-	      ]
-	    },
-		"mark": "area",
-		  "encoding": {
-		    "column": {"field": "day","type": "ordinal"},
-		    "x": {"field": "hour","type": "quantitative",},
-		    "y": {"field": "screen status","type": "quantitative", "aggregate": "sum"},
-		    "color": {"field": "screen status", "type": "nominal"}
-  		},
+	 var mon = {
+	 	
+	 	"layers": [
+	 	 {"data": {
+				      "values": [
+				      {% for query in queriesM %}
+							{% for row in query.results %}
+				          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+				       		{% endfor %}
+				       {% endfor %}
+				       	
+				      ]
+				    },
+					"mark": "area",
+					  "encoding": {
+					    "x": {"field": "hour", "type": "nominal"},
+					    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+					      "color": {
+						      "field": "screen status",
+						      "type": "nominal",
+						      "scale": {
+						        "domain": [0,1, 2, 3],
+						        "range": ["#c7c7c7",
+							              "#79d279",
+							              "#e7ba52",
+							              "#6fdcdc"]
+						      },
+					  },
+				  },
+			
+  			"config": {"mark": {"stacked": "normalize"}}},
+  			
+  			   {"data": {
+				    "values": [
+				      {"class": "1.0", "time": 10},{"class": "1.0", "time": 11}, {"class": "0.0", "time": 12},
+				      {"class": "0.0", "time": 13}, {"class": "0.0", "time": 14},
+				      {"class": "1.0", "time": 15}, {"class": "1.0", "time": 16}]
+				  },
+				  "mark": "area",
+				  "encoding": {
+				    "x": {"field": "time", "type": "nomial"},
+				    "y": {"field": "class", "type": "quantitative"}
+				  }}
+  			
+  		]
+
+	 };
+	 
+	 var tues = {
+	 	 "data": {
+				      "values": [
+				      {% for query in queriesT %}
+							{% for row in query.results %}
+				          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+				       		{% endfor %}
+				       {% endfor %}
+				       	
+				      ]
+				    },
+					"mark": "area",
+					  "encoding": {
+					    "x": {"field": "hour", "type": "nominal"},
+					    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+					      "color": {
+						      "field": "screen status",
+						      "type": "nominal",
+						      "scale": {
+						        "domain": [0,1, 2, 3],
+						        "range": ["#c7c7c7",
+							              "#79d279",
+							              "#e7ba52",
+							              "#6fdcdc"]
+						      },
+					  },
+				  },
+			
   			"config": {"mark": {"stacked": "normalize"}}
 
 	 };
+	 var wed = {
+	 	 "data": {
+				      "values": [
+				      {% for query in queriesW %}
+							{% for row in query.results %}
+				          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+				       		{% endfor %}
+				       {% endfor %}
+				       	
+				      ]
+				    },
+					"mark": "area",
+					  "encoding": {
+					    "x": {"field": "hour", "type": "nominal"},
+					    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+					      "color": {
+						      "field": "screen status",
+						      "type": "nominal",
+						      "scale": {
+						        "domain": [0,1, 2, 3],
+						        "range": ["#c7c7c7",
+							              "#79d279",
+							              "#e7ba52",
+							              "#6fdcdc"]
+						      },
+					  },
+				  },
+			
+  			"config": {"mark": {"stacked": "normalize"}}
 
+	 };
+		 var thurs = {
+	 	 "data": {
+				      "values": [
+				      {% for query in queriesTH %}
+							{% for row in query.results %}
+				          		{"screen status": {{row[0]}}, "total": {{row[1]}}, "hour":{{row[2]}} },
+				       		{% endfor %}
+				       {% endfor %}
+				       	
+				      ]
+				    },
+					"mark": "area",
+					  "encoding": {
+					    "x": {"field": "hour", "type": "nominal"},
+					    "y": {"aggregate": "sum", "field": "total", "type": "quantitative"},
+					      "color": {
+						      "field": "screen status",
+						      "type": "nominal",
+						      "scale": {
+						        "domain": [0,1, 2, 3],
+						        "range": ["#c7c7c7",
+							              "#79d279",
+							              "#e7ba52",
+							              "#6fdcdc"]
+						      },
+					  },
+				  },
+			
+  			"config": {"mark": {"stacked": "normalize"}}
+
+	 };
 
 			
 	  
@@ -152,13 +268,32 @@
 	  
 	 var embedSpec2 = {
 	    mode: "vega-lite",  // Instruct Vega-Embed to use the Vega-Lite compiler
-	    spec: vlSpec2
+	    spec: mon
+	    // You can add more vega-embed configuration properties here.
+	    // See https://github.com/vega/vega/wiki/Embed-Vega-Web-Components#configuration-propeties for more information.
+	  };
+	 
+	 var embedSpec3 = {
+	    mode: "vega-lite",  // Instruct Vega-Embed to use the Vega-Lite compiler
+	    spec: tues
+	    // You can add more vega-embed configuration properties here.
+	    // See https://github.com/vega/vega/wiki/Embed-Vega-Web-Components#configuration-propeties for more information.
+	  };
+	var embedSpec4 = {
+	    mode: "vega-lite",  // Instruct Vega-Embed to use the Vea-Lite compiler
+	    spec: wed
+	    // You can add more vega-embed configuration properties here.
+	    // See https://github.com/vega/vega/wiki/Embed-Vega-Web-Components#configuration-propeties for more information.
+	  };
+	
+	var embedSpec5 = {
+	    mode: "vega-lite",  // Instruct Vega-Embed to use the Vea-Lite compiler
+	    spec: thurs
 	    // You can add more vega-embed configuration properties here.
 	    // See https://github.com/vega/vega/wiki/Embed-Vega-Web-Components#configuration-propeties for more information.
 	  };
 	  
 	  
-	
 	  // Embed the visualization in the container with id `vis`
 
 	  vg.embed("#vis1", embedSpec1, function(error, result) {
@@ -168,6 +303,21 @@
 	  
 	  
 	  vg.embed("#vis2", embedSpec2, function(error, result) {
+	    // Callback receiving the View instance and parsed Vega spec
+	    // result.view is the View, which resides under the '#vis' element
+	  });
+	  
+	  vg.embed("#vis3", embedSpec3, function(error, result) {
+	    // Callback receiving the View instance and parsed Vega spec
+	    // result.view is the View, which resides under the '#vis' element
+	  });
+	  
+	  vg.embed("#vis4", embedSpec4, function(error, result) {
+	    // Callback receiving the View instance and parsed Vega spec
+	    // result.view is the View, which resides under the '#vis' element
+	  });
+	  
+	  vg.embed("#vis5", embedSpec5, function(error, result) {
 	    // Callback receiving the View instance and parsed Vega spec
 	    // result.view is the View, which resides under the '#vis' element
 	  });
